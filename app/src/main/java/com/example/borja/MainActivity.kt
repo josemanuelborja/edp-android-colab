@@ -1,5 +1,6 @@
 package com.example.borja
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,14 +30,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -54,10 +56,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             BorjaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        BusinessCard()
+                    }
                 }
             }
         }
@@ -65,95 +66,162 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Composable
 fun BusinessCard() {
-    val brand = Color(0xFF771C1B)
+    val primary = MaterialTheme.colorScheme.primary
+    val secondary = MaterialTheme.colorScheme.secondary
+    val surface = MaterialTheme.colorScheme.surface
 
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color(0xFFF4F2F1)),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        primary.copy(alpha = 0.15f),
+                        MaterialTheme.colorScheme.background
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Card(
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = CardDefaults.cardColors(containerColor = surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
             modifier = Modifier
                 .padding(24.dp)
-                .widthIn(max = 340.dp)
+                .widthIn(max = 360.dp)
+                .border(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(primary.copy(alpha = 0.5f), Color.Transparent)
+                    ),
+                    shape = RoundedCornerShape(32.dp)
+                )
         ) {
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                    .padding(top = 40.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(R.drawable.Borja),
-                    contentDescription = "Profile photo",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(110.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, brand, CircleShape)
-                )
+                // Profile Image with a double border/ring effect
+                Box(contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .size(130.dp)
+                            .clip(CircleShape)
+                            .background(
+                                brush = Brush.sweepGradient(
+                                    colors = listOf(primary, secondary, primary)
+                                )
+                            )
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.borja),
+                        contentDescription = "Profile photo",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(4.dp, surface, CircleShape)
+                    )
+                }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
 
                 Text(
-                    "Jose Manuel R. Borja",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = brand,
-                    textAlign = TextAlign.Center
+                    text = "Jose Manuel R. Borja",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 0.5.sp
                 )
+                
                 Text(
-                    "3rd Year IT Student",
-                    fontSize = 14.sp,
-                    color = Color.Gray
+                    text = "3rd Year IT Student",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = primary,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
 
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(32.dp))
+                
                 HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = brand.copy(alpha = 0.2f)
+                    modifier = Modifier.padding(horizontal = 40.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant
                 )
-                Spacer(Modifier.height(16.dp))
+                
+                Spacer(Modifier.height(24.dp))
 
-                ContactRow(Icons.Default.Phone, "+63 960 930 0287", brand)
-                ContactRow(Icons.Default.Email, "jmborja11296@liceo.edu.ph", brand)
+                ContactRow(
+                    icon = Icons.Default.Phone,
+                    label = "+63 960 930 0287",
+                    iconColor = primary
+                )
+                ContactRow(
+                    icon = Icons.Default.Email,
+                    label = "jmborja11296@liceo.edu.ph",
+                    iconColor = primary
+                )
+                
+                Spacer(Modifier.height(8.dp))
             }
         }
     }
 }
 
 @Composable
-fun ContactRow(icon: ImageVector, label: String, tint: Color) {
+fun ContactRow(icon: ImageVector, label: String, iconColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable { /* TODO action */ },
-        horizontalArrangement = Arrangement.Center,
+            .padding(vertical = 8.dp, horizontal = 12.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            .clickable { /* TODO action */ }
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
-        Spacer(Modifier.width(8.dp))
-        Text(label, fontSize = 14.sp, color = Color.DarkGray)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = iconColor,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(Modifier.width(16.dp))
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    BusinessCard()
+fun BusinessCardPreview() {
+    BorjaTheme {
+        BusinessCard()
+    }
+}
+
+@Preview(showBackground = true, fontScale = 1.5f, name = "Large Font")
+@Composable
+fun BusinessCardLargeFontPreview() {
+    BorjaTheme {
+        BusinessCard()
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+@Composable
+fun BusinessCardDarkModePreview() {
+    BorjaTheme(darkTheme = true) {
+        BusinessCard()
+    }
 }
