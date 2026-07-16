@@ -109,7 +109,7 @@ fun ProfileScreen() {
             Box(modifier = Modifier.size(90.dp)) {
 
                 Image(
-                    painter = painterResource(id = R.drawable.pfp),
+                    painter = painterResource(id = R.drawable.borja),
                     contentDescription = "Profile picture",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
