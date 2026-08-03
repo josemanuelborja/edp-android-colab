@@ -88,14 +88,6 @@ fun GroceryListApp() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(
-            onClick = { groceries.clear() }
-        ) {
-            Text("Clear All")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn {
             items(groceries) { item ->
 
