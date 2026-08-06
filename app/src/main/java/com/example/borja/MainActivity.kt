@@ -12,6 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.borja.ui.theme.BorjaTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,11 +24,29 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BorjaTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    NavHost(
+                        navController = navController,
+                        startDestination = Home,
                         modifier = Modifier.padding(innerPadding)
-                    )
+                    ) {
+                        composable<Home> {
+                            HomeScreen(onShowGreeting = { typedName ->
+                                // pass the name by creating a Greeting route object
+                                navController.navigate(Greeting(userName = typedName))
+                            })
+                        }
+
+                        composable<Greeting> { backStackEntry ->
+                            // rebuild the typed Greeting object on this screen
+                            val greeting: Greeting = backStackEntry.toRoute()
+                            GreetingScreen(
+                                userName = greeting.userName,
+                                onBack = { navController.navigateUp() }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -31,7 +54,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun GreetingMessage(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
         modifier = modifier
@@ -42,6 +65,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     BorjaTheme {
-        Greeting("Android")
+        GreetingMessage("Android")
     }
 }
